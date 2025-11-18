@@ -10,8 +10,10 @@ namespace App\Controller\Api;
 
 use App\Controller\AppController;
 use App\Model\Entity\Response\HttpCode;
+use Cake\Utility\Inflector;
 use Cake\Utility\Xml;
 use OpenApi\Attributes as OA;
+use Override;
 
 /**
  * CakePHP OffersController
@@ -20,6 +22,20 @@ use OpenApi\Attributes as OA;
  */
 class OffersController extends AppController
 {
+    private string $path;
+
+    /**
+     * Инициализация
+     *
+     * @return void
+     */
+    #[Override]
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->path = filter_input(INPUT_SERVER, 'DOCUMENT_ROOT') . '/../xml/offers.xml';
+    }
+
     /**
      * Добавление оффера
      *
@@ -27,7 +43,16 @@ class OffersController extends AppController
      */
     public function add(): void
     {
-        // @todo
+        $offer = $this->request->getData();
+        /*foreach ($offer as &$field => $value) {
+            $field = Inflector::dasherize($field);
+        }*/
+        if (!file_exists($this->path)) {
+            $offers = [];
+        }
+        array_push($offers, ['offer' => $offer]);
+        $xml = Xml::fromArray(['offers' => $offers]);
+        file_put_contents($this->path, $xml->asXML());
     }
 
     /**
@@ -86,11 +111,10 @@ class OffersController extends AppController
     )]
     public function index(): void
     {
-        $path = filter_input(INPUT_SERVER, 'DOCUMENT_ROOT') . '/../xml/offers.xml';
-        if (!file_exists($path)) {
+        if (!file_exists($this->path)) {
             $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Данные не найдены'];
         } else {
-            $xmlString = (string)file_get_contents($path);
+            $xmlString = (string)file_get_contents($this->path);
             $xml = Xml::build($xmlString);
             $response = Xml::toArray($xml);
         }
