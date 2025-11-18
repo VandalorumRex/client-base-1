@@ -72,7 +72,8 @@ class OffersController extends AppController
                 if ($field === 'creationDate' && !$item) {
                     $item = date('c');
                 }
-                // Превращаем camelCase в camem-case
+                // Превращаем camelCase в camel-case согласно 
+                // https://yandex.ru/support/realty/ru/requirements/requirements-sale-housing#in_common
                 $child->addChild(Inflector::dasherize($field), $item);
             } else {
                 $onyq = $child->addChild($field);
@@ -153,7 +154,15 @@ class OffersController extends AppController
         } else {
             $xmlString = (string)file_get_contents($this->path);
             $xml = Xml::build($xmlString);
-            $response = Xml::toArray($xml);
+            $xmlArray = Xml::toArray($xml);
+            $response = $xmlArray['offers']['offer'];//[];
+            /*foreach ($xmlArray['offers']['offer'] as $item) {
+                $offer = [];
+                foreach ($item as $field => $value) {
+                    array_push ($offer, [str_replace('@', '', $field) => $value]);
+                }
+                array_push($response, $offer);
+            }*/
         }
         $this->json($response);
     }
