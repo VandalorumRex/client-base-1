@@ -44,12 +44,23 @@ class OffersController extends AppController
      *
      * @return void
      */
+    #[OA\Post(
+        path: '/api/offers',
+        tags: ['offers'],
+        operationId: 'add-offer',
+        description: 'Добавление оффера',
+    )]
+    #[OA\RequestBody(content: new OA\JsonContent(ref: '#/components/schemas/AddOffer'))]
+    #[OA\Response(
+        response: HttpCode::CREATED,
+        description: 'Принято',
+        content: new OA\JsonContent(ref: '#/components/schemas/MessageResponse'),
+    )]
     public function add(): void
     {
         /** @var array<string, string|array<string, string>> $offer */
         $offer = $this->request->getData();
         if (!file_exists($this->path)) {
-            //$offers = [];
             $xmlString = '<?xml version="1.0" encoding="UTF-8"?><offers></offers>';
         } else {
             $xmlString = (string)file_get_contents($this->path);
@@ -61,6 +72,7 @@ class OffersController extends AppController
                 if ($field === 'creationDate' && !$item) {
                     $item = date('c');
                 }
+                // Превращаем camelCase в camem-case
                 $child->addChild(Inflector::dasherize($field), $item);
             } else {
                 $onyq = $child->addChild($field);

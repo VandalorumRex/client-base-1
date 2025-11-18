@@ -15,11 +15,8 @@ use OpenApi\Attributes as OA;
  * @author Mansur
  */
 #[OA\Schema]
-class Offer extends AddOffer
+class AddOffer
 {
-    #[OA\Property(description: 'Дата создания объявления', nullable: false)]
-    public string $internalId;
-
     #[OA\Property(description: 'Тип сделки', nullable: false, enum: ['продажа', 'аренда'])]
     public string $type;
 
@@ -44,9 +41,6 @@ class Offer extends AddOffer
 
     #[OA\Property(description: 'URL страницы с объявлением на вашем сайте', nullable: true)]
     public string $url;
-
-    #[OA\Property(description: 'Дата создания объявления', nullable: false)]
-    public string $creationDate;
 
     #[OA\Property(description: 'Расположение объекта', nullable: false)]
     public Location $location;
