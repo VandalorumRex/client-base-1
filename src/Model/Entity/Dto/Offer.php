@@ -17,21 +17,34 @@ use OpenApi\Attributes as OA;
 #[OA\Schema]
 class Offer
 {
-    #[OA\Property(description: 'Тип сделки')]
+    #[OA\Property(description: 'Тип сделки', nullable: false, enum: ['продажа', 'аренда'])]
     public string $type;
 
-    #[OA\Property(description: 'Тип недвижимости')]
+    #[OA\Property(description: 'Тип недвижимости', nullable: false, enum: ['жилая'])]
     public string $propertyType;
 
-    #[OA\Property(description: 'Категория объекта')]
+    #[OA\Property(
+        description: 'Категория объекта',
+        nullable: false,
+        enum: ['дача', 'дом', 'дом с участком', 'участок', 'часть дома', 'квартира', 'комната', 'таунхаус', 'участок', 'дуплекс','гараж'],
+    )]
     public string $category;
 
-    #[OA\Property(description: 'Категория гаража')]
+    #[OA\Property(description: 'Категория гаража', nullable: true, enum: ['гараж', 'машиноместо', 'бокс'])]
     public string $garageType;
 
-    #[OA\Property(description: 'Номер лота')]
+    #[OA\Property(description: 'Номер лота', nullable: true)]
     public string $lotNumber;
 
-    #[OA\Property(description: 'Кадастровый номер объекта недвижимости')]
+    #[OA\Property(description: 'Кадастровый номер объекта недвижимости', nullable: true)]
     public string $cadastralNumber;
+
+    #[OA\Property(description: 'URL страницы с объявлением на вашем сайте', nullable: true)]
+    public string $url;
+
+    #[OA\Property(description: 'Дата создания объявления', nullable: false)]
+    public string $creationDate;
+
+    #[OA\Property(description: 'Расположение объекта', nullable: false)]
+    public Location $location;
 }

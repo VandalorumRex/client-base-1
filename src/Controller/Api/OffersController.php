@@ -45,7 +45,7 @@ class OffersController extends AppController
      */
     public function add(): void
     {
-        /** @var array<string, string> $offer */
+        /** @var array<string, string|array<string, string>> $offer */
         $offer = $this->request->getData();
         if (!file_exists($this->path)) {
             //$offers = [];
@@ -56,7 +56,17 @@ class OffersController extends AppController
         $offers = new SimpleXMLElement($xmlString);
         $child = $offers->addChild('offer');
         foreach ($offer as $field => $item) {
-            $child->addChild($field, $item);
+            if (is_string($item)) {
+                if ($field === 'creationDate' && !$item) {
+                    $item = date('c');
+                }
+                $child->addChild($field, $item);
+            } else {
+                $onyq = $child->addChild($field);
+                foreach ($item as $subField => $subItem) {
+                    $onyq->addChild($subField, $subItem);
+                }
+            }
         }
         $child->addAttribute('internal-id', Utils::GUIDv4());
 

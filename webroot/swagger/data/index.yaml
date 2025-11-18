@@ -32,27 +32,94 @@ paths:
                 $ref: '#/components/schemas/MessageResponse'
 components:
   schemas:
+    Location:
+      description: 'Description of Location'
+      properties:
+        country:
+          description: Страна
+          type: string
+        region:
+          description: 'Название субъекта РФ'
+          type:
+            - string
+            - 'null'
+        district:
+          description: 'Название района субъекта РФ'
+          type: string
+        localityName:
+          description: 'Название населенного пункта'
+          type: string
+        subLocalityName:
+          description: 'Район в населенном пункте'
+          type:
+            - string
+            - 'null'
+        address:
+          description: 'Адрес объекта — улица и номер здания'
+          type: string
+        apartment:
+          description: 'Номер квартиры'
+          type: string
+      type: object
     Offer:
       description: 'Description of Offer'
       properties:
         type:
           description: 'Тип сделки'
           type: string
+          enum:
+            - продажа
+            - аренда
         propertyType:
           description: 'Тип недвижимости'
           type: string
+          enum:
+            - жилая
         category:
           description: 'Категория объекта'
           type: string
+          enum:
+            - дача
+            - дом
+            - 'дом с участком'
+            - участок
+            - 'часть дома'
+            - квартира
+            - комната
+            - таунхаус
+            - участок
+            - дуплекс
+            - гараж
         garageType:
           description: 'Категория гаража'
-          type: string
+          type:
+            - string
+            - 'null'
+          enum:
+            - гараж
+            - машиноместо
+            - бокс
         lotNumber:
           description: 'Номер лота'
-          type: string
+          type:
+            - string
+            - 'null'
         cadastralNumber:
           description: 'Кадастровый номер объекта недвижимости'
+          type:
+            - string
+            - 'null'
+        url:
+          description: 'URL страницы с объявлением на вашем сайте'
+          type:
+            - string
+            - 'null'
+        creationDate:
+          description: 'Дата создания объявления'
           type: string
+        location:
+          $ref: '#/components/schemas/Location'
+          description: 'Расположение объекта'
       type: object
     MessageResponse:
       description: 'Description of MessageResponse'
