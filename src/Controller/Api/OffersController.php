@@ -118,10 +118,26 @@ class OffersController extends AppController
     /**
      * Просмотр одного оффера
      *
-     * @param string $id
+     * @param string $guid
      * @return void
      */
-    public function view(string $id): void
+    #[OA\Get(
+        path: '/api/offers/{guid}',
+        tags: ['offers'],
+        operationId: 'get-offer',
+        description: 'Просмотр оффера по guid',
+    )]
+    #[OA\Response(
+        response: HttpCode::OK,
+        description: 'Просмотр оффера',
+        content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Offer')),
+    )]
+    #[OA\Response(
+        response: HttpCode::NOT_FOUND,
+        description: 'Оффер на найден',
+        content: new OA\JsonContent(ref: '#/components/schemas/MessageResponse'),
+    )]
+    public function view(string $guid): void
     {
         if (!file_exists($this->path)) {
             $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Данные не найдены'];
@@ -131,7 +147,7 @@ class OffersController extends AppController
             $xmlArray = Xml::toArray($xml);
             $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер на найден'];
             foreach ($xmlArray['offers'] as $item) {
-                if ($item['@internal-id'] === $id) {
+                if ($item['@internal-id'] === $guid) {
                     $response = $item;
                 }
                 /*$offer = [];
