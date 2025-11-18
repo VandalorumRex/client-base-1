@@ -9,9 +9,10 @@ declare(strict_types=1);
 namespace App\Controller\Api;
 
 use App\Controller\AppController;
+use App\Lib\Utils;
 use App\Model\Entity\Response\HttpCode;
-use Cake\Utility\Inflector;
 use Cake\Utility\Xml;
+use DOMDocument;
 use OpenApi\Attributes as OA;
 use Override;
 
@@ -44,15 +45,31 @@ class OffersController extends AppController
     public function add(): void
     {
         $offer = $this->request->getData();
+        //$this->json($offer);
+        //return;
         /*foreach ($offer as &$field => $value) {
             $field = Inflector::dasherize($field);
         }*/
         if (!file_exists($this->path)) {
             $offers = [];
+        } else {
+            $xmlString = (string)file_get_contents($this->path);
+            $xml = Xml::build($xmlString);
+            $offers = Xml::toArray($xml);
         }
-        array_push($offers, ['offer' => $offer]);
+        /** @var array<string, array<string, string>> $offerItem */
+        $offerItem = ['offer' => $offer];
+        $offerItem['offer']['@internal-id'] = Utils::GUIDv4();
+        array_push($offers, $offerItem);
         $xml = Xml::fromArray(['offers' => $offers]);
-        file_put_contents($this->path, $xml->asXML());
+
+        $dom = new DOMDocument('1.0');
+        $dom->preserveWhiteSpace = true;
+        $dom->formatOutput = true;
+        $dom->loadXML((string)$xml->asXML());
+        $xmlPretty = $dom->saveXML();
+        file_put_contents($this->path, $xmlPretty);
+        $this->json($offers);
     }
 
     /**
