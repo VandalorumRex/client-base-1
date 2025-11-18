@@ -16,7 +16,10 @@ declare(strict_types=1);
  */
 namespace App\Controller;
 
+use App\Model\Entity\Response\HttpCode;
 use Cake\Controller\Controller;
+use Cake\I18n\I18n;
+use OpenApi\Attributes as OA;
 use Override;
 
 /**
@@ -27,6 +30,9 @@ use Override;
  *
  * @link https://book.cakephp.org/5/en/controllers.html#the-app-controller
  */
+#[OA\OpenApi('3.1.0')]
+#[OA\Info(title: 'CB1 Offers API', version: '0.1', contact: new OA\Contact(email: 'gho-mansur@yandex.ru'))]
+#[OA\Server('http://cb1.local')]
 class AppController extends Controller
 {
     /**
@@ -50,5 +56,34 @@ class AppController extends Controller
          * see https://book.cakephp.org/5/en/controllers/components/form-protection.html
          */
         //$this->loadComponent('FormProtection');
+    }
+
+    /**
+     * Рендер JSON объекта
+     *
+     * @param object|array<mixed> $response
+     * @return void
+     */
+    public function json(array|object $response): void
+    {
+        if (is_array($response) && isset($response['code']) && is_scalar($response['code'])) {
+            $code = $response['code'] > 0 ? (int)$response['code'] : HttpCode::OK;
+            unset($response['code']);
+        } elseif (is_object($response) && isset($response->code) && is_scalar($response->code)) {
+            $code = $response->code > 0 ? (int)$response->code : HttpCode::OK;
+            unset($response->code);
+        } else {
+            $code = HttpCode::OK;
+        }
+        $this->set('response', $response);
+        $this->viewBuilder()
+            ->setOption('serialize', 'response')
+            ->setOption('jsonOptions', JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
+            ->setClassName('Json');
+        $this->setResponse(
+            $this->response->withStatus($code)->withHeader('Access-Control-Allow-Origin', '*')
+                ->withHeader('Content-Language', I18n::getLocale())
+                ->withHeader('Content-Type', 'application/json; charset=utf-8'),
+        );
     }
 }
