@@ -93,4 +93,12 @@ return function (RouteBuilder $routes): void {
      * });
      * ```
      */
+    $routes->prefix(
+        'Api',
+        ['param' => 'value'],
+        function (RouteBuilder $builder): void {
+            $builder->setExtensions(['json']);
+            $builder->resources('{controller}');
+        },
+    );
 };
