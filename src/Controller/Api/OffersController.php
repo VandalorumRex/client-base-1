@@ -123,7 +123,25 @@ class OffersController extends AppController
      */
     public function view(string $id): void
     {
-        // @todo
+        if (!file_exists($this->path)) {
+            $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Данные не найдены'];
+        } else {
+            $xmlString = (string)file_get_contents($this->path);
+            $xml = Xml::build($xmlString);
+            $xmlArray = Xml::toArray($xml);
+            $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер на найден'];
+            foreach ($xmlArray['offers'] as $item) {
+                if ($item['@internal-id'] === $id) {
+                    $response = $item;
+                }
+                /*$offer = [];
+                foreach ($item as $field => $value) {
+                    array_push ($offer, [str_replace('@', '', $field) => $value]);
+                }
+                array_push($response, $offer);*/
+            }
+        }
+        $this->json($response);
     }
 
     /**
