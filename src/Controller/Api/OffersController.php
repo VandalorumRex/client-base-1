@@ -11,6 +11,7 @@ namespace App\Controller\Api;
 use App\Controller\AppController;
 use App\Lib\Utils;
 use App\Model\Entity\Response\HttpCode;
+use Cake\Utility\Inflector;
 use Cake\Utility\Xml;
 use DOMDocument;
 use OpenApi\Attributes as OA;
@@ -60,11 +61,11 @@ class OffersController extends AppController
                 if ($field === 'creationDate' && !$item) {
                     $item = date('c');
                 }
-                $child->addChild($field, $item);
+                $child->addChild(Inflector::dasherize($field), $item);
             } else {
                 $onyq = $child->addChild($field);
                 foreach ($item as $subField => $subItem) {
-                    $onyq->addChild($subField, $subItem);
+                    $onyq->addChild(Inflector::dasherize($subField), $subItem);
                 }
             }
         }
