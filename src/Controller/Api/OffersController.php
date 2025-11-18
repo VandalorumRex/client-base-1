@@ -15,6 +15,7 @@ use Cake\Utility\Xml;
 use DOMDocument;
 use OpenApi\Attributes as OA;
 use Override;
+use SimpleXMLElement;
 
 /**
  * CakePHP OffersController
@@ -44,32 +45,28 @@ class OffersController extends AppController
      */
     public function add(): void
     {
+        /** @var array<string, string> $offer */
         $offer = $this->request->getData();
-        //$this->json($offer);
-        //return;
-        /*foreach ($offer as &$field => $value) {
-            $field = Inflector::dasherize($field);
-        }*/
         if (!file_exists($this->path)) {
-            $offers = [];
+            //$offers = [];
+            $xmlString = '<?xml version="1.0" encoding="UTF-8"?><offers></offers>';
         } else {
             $xmlString = (string)file_get_contents($this->path);
-            $xml = Xml::build($xmlString);
-            $offers = Xml::toArray($xml);
         }
-        /** @var array<string, array<string, string>> $offerItem */
-        $offerItem = ['offer' => $offer];
-        $offerItem['offer']['@internal-id'] = Utils::GUIDv4();
-        array_push($offers, $offerItem);
-        $xml = Xml::fromArray(['offers' => $offers]);
+        $offers = new SimpleXMLElement($xmlString);
+        $child = $offers->addChild('offer');
+        foreach ($offer as $field => $item) {
+            $child->addChild($field, $item);
+        }
+        $child->addAttribute('internal-id', Utils::GUIDv4());
 
         $dom = new DOMDocument('1.0');
-        $dom->preserveWhiteSpace = true;
+        $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
-        $dom->loadXML((string)$xml->asXML());
+        $dom->loadXML((string)$offers->asXML());
         $xmlPretty = $dom->saveXML();
         file_put_contents($this->path, $xmlPretty);
-        $this->json($offers);
+        $this->json(['code' => HttpCode::CREATED, 'message' => 'Принято']);
     }
 
     /**
