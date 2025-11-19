@@ -238,17 +238,20 @@ class OffersController extends AppController
             $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер на найден'];
             $offer = $xml->xpath("//offer[@internal-id='" . $guid . "']");
             if ($offer) {
-                $response = [];
+                $response = ['internalId' => $guid];
                 foreach ($offer[0] as $field => $value) {
                     $isObject = count($value[0]) > 1;
+                    // camel-case => camelCase
                     $feld = Inflector::variable($field, '-');
                     $response[$feld] =  $isObject ? $value[0] : (string)$value[0];
-                    /*if ($isObject) {
-                        print_r($response[$feld]);
-                        foreach ($response[$feld] as $subField => $subValue) {
-                            $response[$feld][0][Inflector::variable($subField, '-')] = (string)$subValue[0];
+                    if (!$isObject) {
+                        $response[$feld] =  (string)$value[0];
+                    } else {
+                        $response[$feld] = [];
+                        foreach ($value[0] as $subField => $subValue) {
+                            $response[$feld][Inflector::variable($subField, '-')] = (string)$subValue[0];
                         }
-                    }*/
+                    }
                 }
                 //print_r($response);
             }
