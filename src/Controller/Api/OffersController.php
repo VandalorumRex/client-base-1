@@ -282,14 +282,36 @@ class OffersController extends AppController
     )]
     public function index(): void
     {
-        $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Данные не найдены'];
+        $superResponse = ['code' => HttpCode::NOT_FOUND, 'message' => 'Данные не найдены'];
         if (file_exists($this->path)) {
             $xmlString = (string)file_get_contents($this->path);
             $xml = Xml::build($xmlString);
-            $xmlArray = Xml::toArray($xml);
-            if (is_array($xmlArray['offers']) && isset($xmlArray['offers']['offer'])) {
-                $response = $xmlArray['offers']['offer'];
+            //$response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер на найден'];
+            //$offer = $xml->xpath("//offer[@internal-id='" . $guid . "']");
+            $superResponse = [];
+            foreach ($xml as $offer) {
+            //if ($offer) {
+                $response = [];//'internalId' => $guid];
+                foreach ($offer[0] as $field => $value) {
+                    $isObject = count($value[0]) > 1;
+                    // camel-case => camelCase
+                    $feld = Inflector::variable($field, '-');
+                    $response[$feld] =  $isObject ? $value[0] : (string)$value[0];
+                    if (!$isObject) {
+                        $response[$feld] =  (string)$value[0];
+                    } else {
+                        $response[$feld] = [];
+                        foreach ($value[0] as $subField => $subValue) {
+                            $response[$feld][Inflector::variable($subField, '-')] = (string)$subValue[0];
+                        }
+                    }
+                }
+                array_push($superResponse, $response);
             }
+            //$xmlArray = Xml::toArray($xml);
+            //if (is_array($xmlArray['offers']) && isset($xmlArray['offers']['offer'])) {
+            //    $response = $xmlArray['offers']['offer'];
+            //}
             /*foreach ($xmlArray['offers']['offer'] as $item) {
                 $offer = [];
                 foreach ($item as $field => $value) {
@@ -298,6 +320,6 @@ class OffersController extends AppController
                 array_push($response, $offer);
             }*/
         }
-        $this->json($response);
+        $this->json($superResponse);
     }
 }
