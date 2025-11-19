@@ -33,13 +33,13 @@ Then visit `http://localhost:8765` to see the welcome page.
 
 Откройте файл с админскими правами
 
-# Windows:
+### Windows:
 
 ```cmd
 C:\Windows\System32\drivers\etc\hosts
 ```
 
-# Linux или MacOS
+### Linux или MacOS
 
 ```cmd
 /etc/hosts
@@ -51,7 +51,7 @@ C:\Windows\System32\drivers\etc\hosts
 127.0.0.1       cb1.local
 ```
 
-# Apache config
+### Apache config
 
 ```conf
 <VirtualHost *:80>  
@@ -64,4 +64,9 @@ C:\Windows\System32\drivers\etc\hosts
         Require all granted  
     </Directory>  
 </VirtualHost>
+```
+## Swagger (Описание команд)
+
+```url
+http://cb1.local/swagger/index.html
 ```
