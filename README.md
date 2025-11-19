@@ -70,3 +70,26 @@ C:\Windows\System32\drivers\etc\hosts
 ```url
 http://cb1.local/swagger/index.html
 ```
+
+## Пример запроса (для POST и PUT)
+
+```json
+{
+    "type": "аренда",
+    "propertyType": "жилая",
+    "category": "дача",
+    "garageType": "гараж",
+    "lotNumber": "1",
+    "cadastralNumber": "17:00:111222:789",
+    "url": "https://example.com",
+    "location": {
+      "country": "Россия",
+      "region": "Республика Татарстан",
+      "district": "Зеленодольский",
+      "localityName": "Осиново",
+      "subLocalityName": "Радужный",
+      "address": "Садовая 9",
+      "apartment": ""
+    }
+  }
+```
