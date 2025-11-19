@@ -8,7 +8,8 @@ API должно соответствовать спецификации JSON:AP
 
 ## Installation
 
-1. ```bash
+1. Склонируйте репу
+```bash
 git clone https://github.com/VandalorumRex/client-base-1.git cb1
 cd cb1
 ```
