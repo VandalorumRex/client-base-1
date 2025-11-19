@@ -110,19 +110,34 @@ class OffersController extends AppController
             $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Данные не найдены'];
         } else {
             $xmlString = (string)file_get_contents($this->path);
-            $xml = Xml::build($xmlString);
-            $xmlArray = Xml::toArray($xml);
-            $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер на найден'];
-            foreach ($xmlArray['offers'] as $item) {
-                if ($item['@internal-id'] === $guid) {
-                    $found = $item;
+            $dom = new DomDocument;
+            $dom->loadXML($xmlString);
+
+            // Найдем элемент который необходимо удалить
+            $xpath = new DOMXpath($dom);
+            $nodelist = $xpath->query("/offers/offer[@internal-id='" . $guid . "']");
+            $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер не найден'];
+            $foundNode = $nodelist->item(0);
+            if ($foundNode) {
+                foreach ($offer as $field => $value) {
+                    $node = $foundNode->getElementsByTagName($field);
+                    if (is_string($value) && $node->item(0)) {
+                        $node->item(0)->nodeValue = $value;
+                    }
                 }
-                /*$offer = [];
-                foreach ($item as $field => $value) {
-                    array_push ($offer, [str_replace('@', '', $field) => $value]);
-                }
-                array_push($response, $offer);*/
+                $savedXml = $dom->saveXML();
+                //$xmlPretty = str_replace("  \n", '', $savedXml);
+                file_put_contents($this->path, $savedXml);
+                $response = ['message' => 'Сохранено'];
             }
+            /*$xml = Xml::build($xmlString);
+            $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер на найден'];
+            $found = $xml->xpath("//offer[@internal-id='" . $guid . "']");
+            if ($found) {
+                foreach ($found[0] as $field => $value) {
+                    
+                }
+            }*/
         }
         $this->json($response);
     }
@@ -209,7 +224,6 @@ class OffersController extends AppController
             $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер на найден'];
             $offer = $xml->xpath("//offer[@internal-id='" . $guid . "']");
             if ($offer) {
-                //$response = $offer;
                 $response = [];
                 foreach ($offer[0] as $field => $value) {
                     $isObject = count($value[0]) > 1;
