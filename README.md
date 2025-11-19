@@ -1,12 +1,10 @@
-# CakePHP Application Skeleton
+# JSON API для работы с данными, хранящимися в XML-файле.
 
-![Build Status](https://github.com/cakephp/app/actions/workflows/ci.yml/badge.svg?branch=5.x)
-[![Total Downloads](https://img.shields.io/packagist/dt/cakephp/app.svg?style=flat-square)](https://packagist.org/packages/cakephp/app)
-[![PHPStan](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
+API должно соответствовать спецификации JSON:API: [https://jsonapi.org/]https://jsonapi.org/
 
-A skeleton for creating applications with [CakePHP](https://cakephp.org) 5.x.
+Данные хранятся в XML-файле в формате «Яндекс Недвижимость»: [https://yandex.ru/support/realty/requirements/requirements-sale-housing.html]https://yandex.ru/support/realty/requirements/requirements-sale-housing.html
 
-The framework source code can be found here: [cakephp/cakephp](https://github.com/cakephp/cakephp).
+Должна быть реализована возможность получать, изменять, добавлять, удалять данные из файла.
 
 ## Installation
 
