@@ -14,6 +14,7 @@ use App\Model\Entity\Response\HttpCode;
 use Cake\Utility\Inflector;
 use Cake\Utility\Xml;
 use DOMDocument;
+use DOMXpath;
 use OpenApi\Attributes as OA;
 use Override;
 use SimpleXMLElement;
@@ -96,23 +97,81 @@ class OffersController extends AppController
     /**
      * Редактирование оффера
      *
-     * @param string $id
+     * @param string $guid
      * @return void
      */
-    public function edit(string $id): void
+    public function edit(string $guid): void
     {
-        // @todo
+        $offer = $this->request->getData();
+        if (!file_exists($this->path)) {
+            $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Данные не найдены'];
+        } else {
+            $xmlString = (string)file_get_contents($this->path);
+            $xml = Xml::build($xmlString);
+            $xmlArray = Xml::toArray($xml);
+            $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер на найден'];
+            foreach ($xmlArray['offers'] as $item) {
+                if ($item['@internal-id'] === $guid) {
+                    $found = $item;
+                }
+                /*$offer = [];
+                foreach ($item as $field => $value) {
+                    array_push ($offer, [str_replace('@', '', $field) => $value]);
+                }
+                array_push($response, $offer);*/
+            }
+        }
+        $this->json($response);
     }
 
     /**
      * Удаление оффера
      *
-     * @param string $id
+     * @param string $guid
      * @return void
      */
-    public function delete(string $id): void
+    #[OA\Delete(
+        path: '/api/offers/{guid}',
+        tags: ['offers'],
+        operationId: 'delete-offer',
+        description: 'Удалить оффер по guid',
+    )]
+    #[OA\Response(
+        response: HttpCode::OK,
+        description: 'Оффер удалён',
+        content: new OA\JsonContent(ref: '#/components/schemas/MessageResponse'),
+    )]
+    #[OA\Response(
+        response: HttpCode::NOT_FOUND,
+        description: 'Оффер на найден',
+        content: new OA\JsonContent(ref: '#/components/schemas/MessageResponse'),
+    )]
+    public function delete(string $guid): void
     {
-        // @todo
+        if (!file_exists($this->path)) {
+            $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Данные не найдены'];
+        } else {
+            $xmlString = (string)file_get_contents($this->path);
+            $dom = new DomDocument;
+            $dom->loadXML($xmlString);
+
+            // Найдем элемент который необходимо удалить
+            $xpath = new DOMXpath($dom);
+            $nodelist = $xpath->query("/offers/offer[@internal-id='" . $guid . "']");
+            $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер не найден'];
+            $oldnode = $nodelist->item(0);
+            if ($oldnode) {
+                // Удаляем элемент
+                $oldnode->parentNode->removeChild($oldnode);
+                $dom->preserveWhiteSpace = false;
+                $dom->formatOutput = true;
+                $savedXml = $dom->saveXML();
+                $xmlPretty = str_replace("  \n", '', $savedXml);
+                file_put_contents($this->path, $xmlPretty);
+                $response = ['message' => 'Оффер успешно удалён'];
+            }
+        }
+        $this->json($response);
     }
 
     /**
@@ -130,7 +189,7 @@ class OffersController extends AppController
     #[OA\Response(
         response: HttpCode::OK,
         description: 'Просмотр оффера',
-        content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Offer')),
+        content: new OA\JsonContent(ref: '#/components/schemas/Offer'),
     )]
     #[OA\Response(
         response: HttpCode::NOT_FOUND,
@@ -144,18 +203,22 @@ class OffersController extends AppController
         } else {
             $xmlString = (string)file_get_contents($this->path);
             $xml = Xml::build($xmlString);
-            $xmlArray = Xml::toArray($xml);
+            //$xmlArray = Xml::toArray($xml);
             $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер на найден'];
-            foreach ($xmlArray['offers'] as $item) {
+            $offer = $xml->xpath("//offer[@internal-id='" . $guid . "']");
+            if ($offer) {
+                $response = $offer;
+            }
+            /*foreach ($xmlArray['offers'] as $item) {
                 if ($item['@internal-id'] === $guid) {
                     $response = $item;
-                }
+                }*/
                 /*$offer = [];
                 foreach ($item as $field => $value) {
                     array_push ($offer, [str_replace('@', '', $field) => $value]);
                 }
                 array_push($response, $offer);*/
-            }
+            //}
         }
         $this->json($response);
     }

@@ -48,6 +48,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageResponse'
+  '/api/offers/{guid}':
+    get:
+      tags:
+        - offers
+      summary: 'Просмотр одного оффера'
+      description: 'Просмотр оффера по guid'
+      operationId: get-offer
+      responses:
+        '200':
+          description: 'Просмотр оффера'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        '404':
+          description: 'Оффер на найден'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+    delete:
+      tags:
+        - offers
+      summary: 'Удаление оффера'
+      description: 'Удалить оффер по guid'
+      operationId: delete-offer
+      responses:
+        '200':
+          description: 'Оффер удалён'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: 'Оффер на найден'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
 components:
   schemas:
     AddOffer:
