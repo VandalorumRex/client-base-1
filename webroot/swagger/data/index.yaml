@@ -68,6 +68,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageResponse'
+    put:
+      tags:
+        - offers
+      summary: 'Редактирование оффера'
+      description: 'Добавление оффера'
+      operationId: edit-offer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddOffer'
+      responses:
+        '201':
+          description: Принято
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
     delete:
       tags:
         - offers

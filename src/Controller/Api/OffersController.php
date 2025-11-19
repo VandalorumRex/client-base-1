@@ -82,6 +82,7 @@ class OffersController extends AppController
             } else {
                 $onyq = $child->addChild($field);
                 foreach ($item as $subField => $subItem) {
+                    // Превращаем camelCase в camel-case
                     $onyq->addChild(Inflector::dasherize($subField), $subItem);
                 }
             }
@@ -103,9 +104,22 @@ class OffersController extends AppController
      * @param string $guid
      * @return void
      */
+    #[OA\Put(
+        path: '/api/offers/{guid}',
+        tags: ['offers'],
+        operationId: 'edit-offer',
+        description: 'Добавление оффера',
+    )]
+    #[OA\RequestBody(content: new OA\JsonContent(ref: '#/components/schemas/AddOffer'))]
+    #[OA\Response(
+        response: HttpCode::CREATED,
+        description: 'Принято',
+        content: new OA\JsonContent(ref: '#/components/schemas/MessageResponse'),
+    )]
     public function edit(string $guid): void
     {
         $offer = $this->request->getData();
+        //print_r($offer);
         if (!file_exists($this->path)) {
             $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Данные не найдены'];
         } else {
@@ -113,31 +127,31 @@ class OffersController extends AppController
             $dom = new DomDocument;
             $dom->loadXML($xmlString);
 
-            // Найдем элемент который необходимо удалить
+            // Найдем элемент который необходимо изменить
             $xpath = new DOMXpath($dom);
             $nodelist = $xpath->query("/offers/offer[@internal-id='" . $guid . "']");
             $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер не найден'];
             $foundNode = $nodelist->item(0);
             if ($foundNode) {
                 foreach ($offer as $field => $value) {
-                    $node = $foundNode->getElementsByTagName($field);
-                    if (is_string($value) && $node->item(0)) {
-                        $node->item(0)->nodeValue = $value;
+                    $node = $foundNode->getElementsByTagName(Inflector::dasherize($field));
+                    if ($node->item(0) && $field !== 'creationDate') {
+                        if (is_string($value)) {
+                            $node->item(0)->nodeValue = $value;
+                        } else {
+                            foreach ($value as $subField => $subValue) {
+                                $subNode = $node->item(0)->getElementsByTagName(Inflector::dasherize($subField));
+                                if ($subNode->item(0)) {
+                                    $subNode->item(0)->nodeValue = $subValue;
+                                }
+                            }
+                        }
                     }
                 }
                 $savedXml = $dom->saveXML();
-                //$xmlPretty = str_replace("  \n", '', $savedXml);
                 file_put_contents($this->path, $savedXml);
                 $response = ['message' => 'Сохранено'];
             }
-            /*$xml = Xml::build($xmlString);
-            $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер на найден'];
-            $found = $xml->xpath("//offer[@internal-id='" . $guid . "']");
-            if ($found) {
-                foreach ($found[0] as $field => $value) {
-                    
-                }
-            }*/
         }
         $this->json($response);
     }
