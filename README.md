@@ -51,3 +51,16 @@ Other environment agnostic settings can be changed in `config/app.php`.
 The app skeleton uses [Milligram](https://milligram.io/) (v1.3) minimalist CSS
 framework by default. You can, however, replace it with any other library or
 custom styles.
+
+## Apache config
+
+<VirtualHost *:80>
+    ServerAdmin admin@example.ru
+    DocumentRoot "G:/projects/hh/client.base/cb1/webroot"
+    ServerName cb1.local
+    <Directory "G:/projects/hh/client.base/cb1/webroot/"> 
+        Options Indexes MultiViews FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
