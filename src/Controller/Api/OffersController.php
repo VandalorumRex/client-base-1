@@ -206,22 +206,24 @@ class OffersController extends AppController
         } else {
             $xmlString = (string)file_get_contents($this->path);
             $xml = Xml::build($xmlString);
-            //$xmlArray = Xml::toArray($xml);
             $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер на найден'];
             $offer = $xml->xpath("//offer[@internal-id='" . $guid . "']");
             if ($offer) {
-                $response = $offer;
-            }
-            /*foreach ($xmlArray['offers'] as $item) {
-                if ($item['@internal-id'] === $guid) {
-                    $response = $item;
-                }*/
-                /*$offer = [];
-                foreach ($item as $field => $value) {
-                    array_push ($offer, [str_replace('@', '', $field) => $value]);
+                //$response = $offer;
+                $response = [];
+                foreach ($offer[0] as $field => $value) {
+                    $isObject = count($value[0]) > 1;
+                    $feld = Inflector::variable($field, '-');
+                    $response[$feld] =  $isObject ? $value[0] : (string)$value[0];
+                    /*if ($isObject) {
+                        print_r($response[$feld]);
+                        foreach ($response[$feld] as $subField => $subValue) {
+                            $response[$feld][0][Inflector::variable($subField, '-')] = (string)$subValue[0];
+                        }
+                    }*/
                 }
-                array_push($response, $offer);*/
-            //}
+                //print_r($response);
+            }
         }
         $this->json($response);
     }
