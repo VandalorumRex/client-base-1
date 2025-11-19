@@ -61,6 +61,9 @@ class OffersController extends AppController
     {
         /** @var array<string, string|array<string, string>> $offer */
         $offer = $this->request->getData();
+        if (!file_exists(filter_input(INPUT_SERVER, 'DOCUMENT_ROOT') . '/../xml')) {
+            mkdir(filter_input(INPUT_SERVER, 'DOCUMENT_ROOT') . '/../xml');
+        }
         if (!file_exists($this->path)) {
             $xmlString = '<?xml version="1.0" encoding="UTF-8"?><offers></offers>';
         } else {
