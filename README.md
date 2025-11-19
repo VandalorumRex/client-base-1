@@ -4,23 +4,18 @@ API должно соответствовать спецификации JSON:AP
 
 Данные хранятся в XML-файле в формате «Яндекс Недвижимость»: https://yandex.ru/support/realty/requirements/requirements-sale-housing.html
 
-Должна быть реализована возможность получать, изменять, добавлять, удалять данные из файла.
+Реализована возможность получать, изменять, добавлять, удалять данные из файла.
 
 ## Installation
 
-1. Download [Composer](https://getcomposer.org/doc/00-intro.md) or update `composer self-update`.
-2. Run `php composer.phar create-project --prefer-dist cakephp/app [app_name]`.
-
-If Composer is installed globally, run
-
-```bash
-composer create-project --prefer-dist cakephp/app
+1. ```bash
+git clone https://github.com/VandalorumRex/client-base-1.git cb1
+cd cb1
 ```
-
-In case you want to use a custom app dir name (e.g. `/myapp/`):
+2. If Composer is installed globally, run
 
 ```bash
-composer create-project --prefer-dist cakephp/app myapp
+composer install
 ```
 
 You can now either use your machine's webserver to view the default home page, or start
