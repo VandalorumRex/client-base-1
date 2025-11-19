@@ -54,7 +54,7 @@ custom styles.
 
 ## Apache config
 
-<VirtualHost *:80>  
+```<VirtualHost *:80>  
     ServerAdmin admin@example.ru  
     DocumentRoot "G:/projects/hh/client.base/cb1/webroot"  
     ServerName cb1.local  
@@ -63,4 +63,4 @@ custom styles.
         AllowOverride All  
         Require all granted  
     </Directory>  
-</VirtualHost>
+</VirtualHost>```
