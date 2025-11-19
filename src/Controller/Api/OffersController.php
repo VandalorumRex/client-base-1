@@ -286,12 +286,9 @@ class OffersController extends AppController
         if (file_exists($this->path)) {
             $xmlString = (string)file_get_contents($this->path);
             $xml = Xml::build($xmlString);
-            //$response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Оффер на найден'];
-            //$offer = $xml->xpath("//offer[@internal-id='" . $guid . "']");
             $superResponse = [];
             foreach ($xml as $offer) {
-            //if ($offer) {
-                $response = [];//'internalId' => $guid];
+                $response = ['internalId' => (string)$offer[0]->attributes()->{'internal-id'}[0]];
                 foreach ($offer[0] as $field => $value) {
                     $isObject = count($value[0]) > 1;
                     // camel-case => camelCase
@@ -308,17 +305,6 @@ class OffersController extends AppController
                 }
                 array_push($superResponse, $response);
             }
-            //$xmlArray = Xml::toArray($xml);
-            //if (is_array($xmlArray['offers']) && isset($xmlArray['offers']['offer'])) {
-            //    $response = $xmlArray['offers']['offer'];
-            //}
-            /*foreach ($xmlArray['offers']['offer'] as $item) {
-                $offer = [];
-                foreach ($item as $field => $value) {
-                    array_push ($offer, [str_replace('@', '', $field) => $value]);
-                }
-                array_push($response, $offer);
-            }*/
         }
         $this->json($superResponse);
     }
