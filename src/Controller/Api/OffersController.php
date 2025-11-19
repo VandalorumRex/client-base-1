@@ -249,13 +249,14 @@ class OffersController extends AppController
     )]
     public function index(): void
     {
-        if (!file_exists($this->path)) {
-            $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Данные не найдены'];
-        } else {
+        $response = ['code' => HttpCode::NOT_FOUND, 'message' => 'Данные не найдены'];
+        if (file_exists($this->path)) {
             $xmlString = (string)file_get_contents($this->path);
             $xml = Xml::build($xmlString);
             $xmlArray = Xml::toArray($xml);
-            $response = $xmlArray['offers']['offer'];//[];
+            if (is_array($xmlArray['offers']) && isset($xmlArray['offers']['offer'])) {
+                $response = $xmlArray['offers']['offer'];
+            }
             /*foreach ($xmlArray['offers']['offer'] as $item) {
                 $offer = [];
                 foreach ($item as $field => $value) {
