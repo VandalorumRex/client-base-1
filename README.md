@@ -1,8 +1,8 @@
 # JSON API для работы с данными, хранящимися в XML-файле.
 
-API должно соответствовать спецификации JSON:API: [https://jsonapi.org/]https://jsonapi.org/
+API должно соответствовать спецификации JSON:API: https://jsonapi.org/
 
-Данные хранятся в XML-файле в формате «Яндекс Недвижимость»: [https://yandex.ru/support/realty/requirements/requirements-sale-housing.html]https://yandex.ru/support/realty/requirements/requirements-sale-housing.html
+Данные хранятся в XML-файле в формате «Яндекс Недвижимость»: https://yandex.ru/support/realty/requirements/requirements-sale-housing.html
 
 Должна быть реализована возможность получать, изменять, добавлять, удалять данные из файла.
 
